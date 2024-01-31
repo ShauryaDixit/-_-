@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 650px;
+            background-color: rgb(77 139 200);
+        }
+        .container{
+            height: 520px;
+            width: 400px;
+            border-radius: 10px;
+            display: flex ;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background-color: white;
+        }
+        .display{
+            height: 90px;
+            width: 360px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            background-color: rgb(203 229 254);
+            color: rgba(0, 0, 0, 0.863);
+            position: relative;
+        }
+        .buttons{
+            display: grid;
+            grid-template-columns: repeat(3,60px);
+            grid-gap: 10px;
+        }
+        .narrow{
+            height: 5px;
+        }
+        .narrow span{
+            position: relative;
+            bottom: 8px;
+        }
+        .ans span{
+            right:6px;
+        }
+        .btn{
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            text-align: center;
+            border-radius: 7px;
+            font-size: 18px;
+            font-weight: bold;
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            padding: 22px;
+            background-color: #cbe5fe;
+        }
+        .dark{
+            background-color: rgb(158 204 252);
+            color: rgb(77 137 199);
+        }
+        .enter{
+            background-color: rgb(69 131 196);
+            grid-column: 6/4;
+            grid-row: 5;
+            color: white;
+        }
+        .btn:hover{
+            background-color: black;
+            color:white;
+        }
+        .history,.output{
+            position:absolute;
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            right:10px;
+        }
+        .history{
+            color:rgb(109, 160, 214);
+            font-size: 19px;
+            left:10px;
+            top:-10px;
+        }
+        .output{
+            color:black;
+            font-size: 30px;
+            bottom:-25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="result" class="display">
+            <div id="history" class="history">
+              <p id="history-value"></p>
+            </div>
+            <div id="output" class="output">
+              <p id="output-value"></p>
+            </div>
+        </div>
+        <div class="buttons">
+          <div id="(" class="number btn narrow dark"><span>(</span></div>
+          <div id=")" class="number btn narrow dark"><span>)</span></div>
+          <div id="" class="ans number btn narrow dark"><span>ans</span></div>
+          <div id="backspace" class="number btn narrow dark"><span>del</span></div>
+          <div id="clear" class="number btn narrow dark"><span>clear</span></div>
+          <div id="7" class="number btn num">7</div>
+          <div id="8" class="number btn num">8</div>
+          <div id="9" class="number btn num">9</div>
+          <div id="%" class="number btn dark">%</div>
+          <div id="sqrt" class="number btn dark">&#8730;</div>
+          <div id="4" class="number btn num">4</div>
+          <div id="5" class="number btn num">5</div>
+          <div id="6" class="number btn num">6</div>
+          <div id="*" class="number btn dark">x</div>
+          <div id="/" class="number btn dark">&divide;</div>
+          <div id="1" class="number btn num">1</div>
+          <div id="2" class="number btn num">2</div>
+          <div id="3" class="number btn num">3</div>
+          <div id="+" class="number btn dark">+</div>
+          <div id="-" class="number btn dark">-</div>
+          <div id="." class="number btn dark">.</div>
+          <div id="0" class="number btn num">0</div>
+          <div onclick="toggleSign()" class="btn dark">&#177;</div>
+          <div id="=" class="number btn enter">ENTER</div>
+        </div>
+      </div>
+    </body>
+    </html>
+    <script>
+      let p=document.getElementsByClassName("ans");
+      function getHistory() {
+  return document.getElementById("history-value");
+}
+function printHistory(num) {
+  document.getElementById("history-value").innerText = num;
+}
+function getOutput() {
+  return document.getElementById("output-value").innerText;
+}
+function printOutput(num) {
+  document.getElementById("output-value").innerText = num;
+}
+var lst = ["%", "/", "+", "-", "*"];
+var f = false;
+var operator = document.getElementsByClassName("number");
+
+for (var i = 0; i < operator.length; i++) {
+  operator[i].addEventListener("click", function () {
+    if (this.id == "clear") {
+      printHistory("");
+      printOutput("");
+    } else if (this.id == "backspace") {
+      var output = getOutput();
+      if (output) {
+        //if output has a value
+        output = output.substring(0, output.length - 1);
+        //output = output;
+        printOutput(output);
+      }
+    } else if (this.id == "=" || this.id=="sqrt") {
+      try {
+        var output = getOutput();
+        var k=output.replace("%","/100");
+        // k=k.replace("&divide;","/");
+        if (output == "Error" || output == "" || f) {
+          f = false;
+          printOutput("");
+          printHistory("");
+        } else {
+          var outpu = eval(k);
+          if(this.id=="sqrt")
+            outpu=Math.sqrt(outpu);
+          // print(outpu);
+          if (outpu == undefined) {
+            outpu = "Error";
+            output = "";
+          }
+          f = true;
+          p[0].id=outpu;
+          printOutput(outpu);
+          printHistory(output);
+        }
+      } catch (error) {
+        outpu = "Error";
+        output = "";
+        f = true;
+        printOutput(outpu);
+        printHistory(output);
+      }
+    } else {
+      var output = getOutput().toString();
+      //console.log(lst[1] == this.id);
+      if (output.length == 0 && lst.includes(this.id)) {
+        printOutput("");
+        printHistory("");
+        f = false;
+      } else {
+        if (f || output == "Error") {
+          if (!lst.includes(this.id)) {
+            output = this.id;
+            printHistory("");
+          } else {
+            output = output + this.id.toString();
+          }
+          f = false;
+        } else {
+          if (output.length > 0) output = output + this.id.toString();
+          else output = this.id;
+        }
+        console.log(output);
+
+        printOutput(output);
+      }
+    }
+  });
+}
+
+</script>
+<script>
+    function toggleSign() {
+      const display = document.getElementById('output-value');
+      display.innerText = display.innerText.startsWith('-') ? display.innerText.slice(1) : `-${display.innerText}`;
+    }
+    function calculateSquareRoot() {
+      document.getElementById('display').value = Math.sqrt(eval(document.getElementById('display').value));
+    }
+</script>
